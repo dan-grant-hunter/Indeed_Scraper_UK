@@ -8,6 +8,7 @@ import pandas as pd
 
 # Constant variables
 URL_PREFIX = 'https://www.indeed.co.uk'
+REMOTE_LINK = '&remotejob=032b3046-06a3-4876-8dfd-474eb5e7ed11'
 
 # Time and date variables
 now = datetime.now()
@@ -22,10 +23,10 @@ location_class = "icl-u-xs-mt--xs icl-u-textColor--secondary " \
 salary_class = 'icl-u-xs-mr--xs'
 
 
-def main_page_setup(position, location, sort_type, search_page):
+def main_page_setup(position, location, sort_type, search_page, remote):
     """Create soup object for main jobs page"""
     url = f'https://www.indeed.co.uk/jobs?q={position}&l={location}' \
-                                f'&sort={sort_type}&start={search_page}'
+                                f'&sort={sort_type}{remote}&start={search_page}'
     main_jobs_page = requests.get(url).text
     soup = BeautifulSoup(main_jobs_page, 'lxml')
     return soup
@@ -49,6 +50,16 @@ def capture_time_posted(soup):
         posted_time = results[i].text
         posted_times.append([posted_time])
     return posted_times
+
+
+def capture_remote_tags(soup):
+    """Capture remote tags to include in output file"""
+    remote_tags = []
+    results = soup.select('span[class="remote"]')
+    for i in range(len(results)):
+        remote_tag = results[i].text
+        remote_tags.append([remote_tag])
+    return remote_tags
 
 
 def single_page_setup(job_link):

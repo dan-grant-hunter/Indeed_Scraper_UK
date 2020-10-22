@@ -10,11 +10,11 @@ import uk_indeed_job_info as ukid
 
 
 # Change number_of_search_pages to specify how many pages to be scraped
-number_of_search_pages = 3
+number_of_search_pages = 2
 
 
 # Constant variables
-PAGE_RESULTS_NUMBERS = list(range(0, 300, 10))
+PAGE_RESULTS_NUMBERS = list(range(0, 400, 10))
 URL_SUFFIX_NUMBERS = PAGE_RESULTS_NUMBERS[:number_of_search_pages]
 
 
@@ -22,6 +22,7 @@ URL_SUFFIX_NUMBERS = PAGE_RESULTS_NUMBERS[:number_of_search_pages]
 location = "London"
 sort_type = "date"
 position = "Junior Data"
+remote_results = False
 
 
 # Formatting for search
@@ -43,8 +44,10 @@ def main():
     count = 1
     # Loop through each page of job adverts
     for search_page in URL_SUFFIX_NUMBERS:
+        # Check if jobs requested are remote
+        remote = ukid.REMOTE_LINK if remote_results == True else ''
         # Create soup object for current main jobs listing page
-        soup = ukid.main_page_setup(position, location, sort_type, search_page)
+        soup = ukid.main_page_setup(position, location, sort_type, search_page, remote)
         # Extract job links from page
         job_links = ukid.prepare_job_links(soup)
         # Extract the times each job was posted from the main jobs page
