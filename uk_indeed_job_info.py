@@ -7,7 +7,7 @@ import requests
 import pandas as pd
 
 # Constant variables
-URL_PREFIX = 'https://www.indeed.co.uk'
+URL_PREFIX = 'https://uk.indeed.com'
 REMOTE_LINK = '&remotejob=032b3046-06a3-4876-8dfd-474eb5e7ed11'
 
 # Time and date variables
@@ -25,7 +25,7 @@ salary_class = 'icl-u-xs-mr--xs'
 
 def main_page_setup(position, location, sort_type, search_page, remote):
     """Create soup object for main jobs page"""
-    url = f'https://www.indeed.co.uk/jobs?q={position}&l={location}' \
+    url = f'https://uk.indeed.com/jobs?q={position}&l={location}' \
                                 f'&sort={sort_type}{remote}&start={search_page}'
     main_jobs_page = requests.get(url).text
     soup = BeautifulSoup(main_jobs_page, 'lxml')
@@ -35,9 +35,9 @@ def main_page_setup(position, location, sort_type, search_page, remote):
 def prepare_job_links(soup):
     """Prepare list of job links from header titles"""
     job_links = []
-    results = soup.select('div[class*="jobsearch-SerpJobCard unifiedRow"]')
+    results = soup.select("a[class^=tapItem]")
     for i in range(len(results)):
-        job_link = f"{URL_PREFIX}{results[i].h2.a['href']}"
+        job_link = f"{URL_PREFIX}{results[i]['href']}"
         job_links.append(job_link)
     return job_links
 
@@ -47,7 +47,7 @@ def capture_time_posted(soup):
     posted_times = []
     results = soup.select('span[class*="date"]')
     for i in range(len(results)):
-        posted_time = results[i].text
+        posted_time = list(results[i].strings)[1]
         posted_times.append([posted_time])
     return posted_times
 
